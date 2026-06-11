@@ -71,6 +71,10 @@
         </div>
       </div>
       <div class="chat-header-right">
+        <button class="icon-btn cart-btn" id="cartBtn" title="Корзина">
+          <i class="ti ti-shopping-cart"></i>
+          <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+        </button>
         <button class="icon-btn" id="clearBtn" title="Очистить чат"><i class="ti ti-trash"></i></button>
         <button class="icon-btn" id="apiKeyHeaderBtn" title="API ключ"><i class="ti ti-key"></i></button>
       </div>
@@ -109,6 +113,97 @@
       </div>
     </div>
   </main>
+
+  <!-- Cart / Checkout modal -->
+  <div class="modal-overlay" id="cartModal" style="display:none">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3><i class="ti ti-shopping-cart"></i> Корзина</h3>
+        <button class="modal-close" id="cartClose"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body" id="cartBody">
+        <div class="cart-empty" id="cartEmpty"><i class="ti ti-shopping-cart-off"></i><p>Корзина пуста</p></div>
+        <div id="cartItems"></div>
+      </div>
+      <div class="cart-footer" id="cartFooter" style="display:none">
+        <div class="cart-summary">
+          <div class="cart-row"><span>Товары</span><span id="cartSubtotal">0 ₸</span></div>
+          <div class="cart-row"><span>Доставка</span><span id="cartDelivery">500 ₸</span></div>
+          <div class="cart-row cart-total"><span>Итого</span><span id="cartTotal">0 ₸</span></div>
+        </div>
+        <div class="payment-method">
+          <div class="section-label" style="color:var(--color-muted);margin-bottom:8px">Способ оплаты</div>
+          <div class="pay-options">
+            <label class="pay-option">
+              <input type="radio" name="payMethod" value="card" checked />
+              <i class="ti ti-credit-card"></i> Карта •• 6411
+            </label>
+            <label class="pay-option">
+              <input type="radio" name="payMethod" value="bnpl" />
+              <i class="ti ti-calendar-due"></i> Рассрочка 0-0-12
+            </label>
+            <label class="pay-option">
+              <input type="radio" name="payMethod" value="widget" />
+              <i class="ti ti-brand-mastercard"></i> Halyk Widget
+            </label>
+          </div>
+        </div>
+        <button class="btn btn-pay" id="checkoutBtn">
+          <i class="ti ti-lock"></i> Перейти к оплате
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIN confirmation modal (FR-204 — финализация за клиентом) -->
+  <div class="modal-overlay" id="pinModal" style="display:none">
+    <div class="modal modal-pin">
+      <div class="pin-header">
+        <div class="pin-icon"><i class="ti ti-lock"></i></div>
+        <h3>Подтверждение оплаты</h3>
+        <p id="pinAmount">0 ₸</p>
+      </div>
+      <div class="pin-body">
+        <div class="pin-display" id="pinDisplay">
+          <span class="pin-dot" id="d0"></span>
+          <span class="pin-dot" id="d1"></span>
+          <span class="pin-dot" id="d2"></span>
+          <span class="pin-dot" id="d3"></span>
+        </div>
+        <div class="pin-hint">Введите PIN-код</div>
+        <div class="pin-pad">
+          <button class="pin-key" data-v="1">1</button>
+          <button class="pin-key" data-v="2">2</button>
+          <button class="pin-key" data-v="3">3</button>
+          <button class="pin-key" data-v="4">4</button>
+          <button class="pin-key" data-v="5">5</button>
+          <button class="pin-key" data-v="6">6</button>
+          <button class="pin-key" data-v="7">7</button>
+          <button class="pin-key" data-v="8">8</button>
+          <button class="pin-key" data-v="9">9</button>
+          <button class="pin-key pin-clear" id="pinClear"><i class="ti ti-x"></i></button>
+          <button class="pin-key" data-v="0">0</button>
+          <button class="pin-key pin-back" id="pinBack"><i class="ti ti-backspace"></i></button>
+        </div>
+      </div>
+      <button class="btn btn-secondary" id="pinCancel" style="margin:0 20px 16px;width:calc(100% - 40px)">Отмена</button>
+    </div>
+  </div>
+
+  <!-- Order success modal -->
+  <div class="modal-overlay" id="successModal" style="display:none">
+    <div class="modal modal-pin">
+      <div class="success-screen">
+        <div class="success-icon"><i class="ti ti-circle-check"></i></div>
+        <h3>Заказ оформлен!</h3>
+        <p id="successText">Ваш заказ принят и передан в обработку.</p>
+        <div class="order-id" id="orderId"></div>
+        <button class="btn btn-primary" id="successClose" style="width:100%;margin-top:16px">
+          Отлично!
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Settings modal -->
   <div class="modal-overlay" id="settingsModal" style="display:none">

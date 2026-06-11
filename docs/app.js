@@ -164,7 +164,10 @@ function executeTool(name, input) {
     return { results: results.slice(0, input.limit || 3) };
   }
   if (name === 'market_add_to_cart') {
-    state.cart.push({ sku: input.sku, name: input.name, price: input.price, quantity: input.quantity || 1 });
+    const existing = state.cart.find(i => i.sku === input.sku);
+    if (existing) { existing.quantity += (input.quantity || 1); }
+    else { state.cart.push({ sku: input.sku, name: input.name, price: input.price, quantity: input.quantity || 1 }); }
+    if (typeof updateCartBadge === 'function') updateCartBadge();
     return { success: true, cartSize: state.cart.length, total: state.cart.reduce((s, i) => s + i.price * i.quantity, 0) };
   }
   if (name === 'appteka_search') {
@@ -381,6 +384,7 @@ function addAgentBubble(text, toolsExecuted, intent) {
       btn.textContent = '✓ Добавлен';
       btn.disabled = true;
       btn.style.background = '#38a169';
+      updateCartBadge();
       toast(`${name} добавлен в корзину`);
     });
   });
@@ -506,12 +510,157 @@ document.querySelectorAll('.example-btn').forEach(btn => {
   });
 });
 
+// ── Cart ──────────────────────────────────────────────────────────────────────
+const cartModal   = document.getElementById('cartModal');
+const cartBadge   = document.getElementById('cartBadge');
+const cartItems   = document.getElementById('cartItems');
+const cartEmpty   = document.getElementById('cartEmpty');
+const cartFooter  = document.getElementById('cartFooter');
+
+function updateCartBadge() {
+  const total = state.cart.reduce((s, i) => s + i.quantity, 0);
+  cartBadge.textContent = total;
+  cartBadge.style.display = total > 0 ? 'flex' : 'none';
+}
+
+function renderCart() {
+  cartItems.innerHTML = '';
+  if (!state.cart.length) {
+    cartEmpty.style.display = 'block';
+    cartFooter.style.display = 'none';
+    return;
+  }
+  cartEmpty.style.display = 'none';
+  cartFooter.style.display = 'block';
+
+  const icons = { market: 'ti-building-store', appteka: 'ti-pill', travel: 'ti-plane' };
+
+  state.cart.forEach((item, idx) => {
+    const icon = icons[item.vertical || 'market'] || 'ti-box';
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <div class="cart-item-icon"><i class="ti ${icon}"></i></div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${escHtml(item.name)}</div>
+        <div class="cart-item-merchant">${(item.price).toLocaleString('ru-RU')} ₸ за шт.</div>
+      </div>
+      <div class="cart-item-qty">
+        <button class="qty-btn" data-idx="${idx}" data-delta="-1">−</button>
+        <span class="qty-val">${item.quantity}</span>
+        <button class="qty-btn" data-idx="${idx}" data-delta="1">+</button>
+      </div>
+      <div class="cart-item-price">${(item.price * item.quantity).toLocaleString('ru-RU')} ₸</div>
+      <button class="cart-item-remove" data-idx="${idx}"><i class="ti ti-trash"></i></button>
+    `;
+    cartItems.appendChild(div);
+  });
+
+  // Qty buttons
+  cartItems.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = +btn.dataset.idx;
+      state.cart[idx].quantity += +btn.dataset.delta;
+      if (state.cart[idx].quantity <= 0) state.cart.splice(idx, 1);
+      renderCart();
+      updateCartBadge();
+    });
+  });
+
+  // Remove buttons
+  cartItems.querySelectorAll('.cart-item-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.cart.splice(+btn.dataset.idx, 1);
+      renderCart();
+      updateCartBadge();
+    });
+  });
+
+  // Totals
+  const subtotal = state.cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const delivery = subtotal > 0 ? 500 : 0;
+  document.getElementById('cartSubtotal').textContent = subtotal.toLocaleString('ru-RU') + ' ₸';
+  document.getElementById('cartDelivery').textContent = delivery.toLocaleString('ru-RU') + ' ₸';
+  document.getElementById('cartTotal').textContent = (subtotal + delivery).toLocaleString('ru-RU') + ' ₸';
+}
+
+document.getElementById('cartBtn').addEventListener('click', () => {
+  renderCart();
+  cartModal.style.display = 'flex';
+});
+document.getElementById('cartClose').addEventListener('click', () => cartModal.style.display = 'none');
+
+// ── Checkout button → PIN modal ────────────────────────────────────────────
+const pinModal = document.getElementById('pinModal');
+let pinValue = '';
+
+function openPin() {
+  const subtotal = state.cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const total = subtotal + 500;
+  document.getElementById('pinAmount').textContent = total.toLocaleString('ru-RU') + ' ₸';
+  pinValue = '';
+  updatePinDisplay();
+  cartModal.style.display = 'none';
+  pinModal.style.display = 'flex';
+}
+
+function updatePinDisplay() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('d' + i).classList.toggle('filled', i < pinValue.length);
+  }
+}
+
+document.getElementById('checkoutBtn').addEventListener('click', openPin);
+document.getElementById('pinCancel').addEventListener('click', () => { pinModal.style.display = 'none'; });
+document.getElementById('pinClear').addEventListener('click', () => { pinValue = ''; updatePinDisplay(); });
+document.getElementById('pinBack').addEventListener('click', () => { pinValue = pinValue.slice(0, -1); updatePinDisplay(); });
+
+document.querySelectorAll('.pin-key[data-v]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (pinValue.length >= 4) return;
+    pinValue += btn.dataset.v;
+    updatePinDisplay();
+    if (pinValue.length === 4) {
+      // Any 4-digit PIN is "correct" in the demo
+      setTimeout(confirmPayment, 300);
+    }
+  });
+});
+
+function confirmPayment() {
+  pinModal.style.display = 'none';
+  const method = document.querySelector('input[name="payMethod"]:checked')?.value || 'card';
+  const methodLabels = { card: 'Карта •• 6411', bnpl: 'Рассрочка 0-0-12', widget: 'Halyk Widget' };
+  const subtotal = state.cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const total = subtotal + 500;
+  const orderId = 'HM-' + Date.now().toString(36).toUpperCase();
+
+  document.getElementById('successText').textContent =
+    `Оплата ${total.toLocaleString('ru-RU')} ₸ через ${methodLabels[method]}. Доставка: сегодня–завтра.`;
+  document.getElementById('orderId').textContent = 'Заказ № ' + orderId;
+  document.getElementById('successModal').style.display = 'flex';
+
+  // Add agent message about successful order
+  const summary = state.cart.map(i => `${i.name} ×${i.quantity}`).join(', ');
+  const agentMsg = `✅ Заказ ${orderId} оформлен! ${summary}. Сумма: ${total.toLocaleString('ru-RU')} ₸. Ожидайте доставку.`;
+  addAgentBubble(agentMsg, [], null);
+  state.messages.push({ role: 'assistant', content: agentMsg, ts: Date.now() });
+
+  state.cart = [];
+  updateCartBadge();
+}
+
+document.getElementById('successClose').addEventListener('click', () => {
+  document.getElementById('successModal').style.display = 'none';
+});
+
 // ── Clear chat ───────────────────────────────────────────────────────────────
 document.getElementById('clearBtn').addEventListener('click', () => {
   if (!state.messages.length) return;
   if (!confirm('Очистить историю чата?')) return;
   state.messages = [];
   state.cart = [];
+  updateCartBadge();
   messagesArea.innerHTML = '';
   messagesArea.appendChild(welcomeScreen);
   welcomeScreen.style.display = '';
