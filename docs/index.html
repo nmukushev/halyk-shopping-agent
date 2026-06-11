@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Halyk Shopping Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="ti ti-robot"></i></div>
+      <div class="brand-text">
+        <div class="brand-name">Halyk Shopping Agent</div>
+        <div class="brand-status" id="agentStatus"><span class="dot online"></span> Онлайн</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-label">Вертикали</div>
+      <div class="vertical-list">
+        <div class="vertical-item active" data-v="market"><i class="ti ti-building-store"></i> Market</div>
+        <div class="vertical-item" data-v="appteka"><i class="ti ti-pill"></i> Appteka</div>
+        <div class="vertical-item" data-v="travel"><i class="ti ti-plane"></i> Travel</div>
+        <div class="vertical-item coming" data-v="kino"><i class="ti ti-movie"></i> Kino <span class="badge-soon">soon</span></div>
+        <div class="vertical-item coming" data-v="restaurants"><i class="ti ti-tools-kitchen-2"></i> Рестораны <span class="badge-soon">soon</span></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-label">Примеры запросов</div>
+      <div class="examples-list">
+        <button class="example-btn" data-msg="Купи молоко Айналайын и хлеб тостовый">
+          <i class="ti ti-shopping-cart"></i> Молоко и хлеб
+        </button>
+        <button class="example-btn" data-msg="Нужен утюг до 50 тысяч, хороший">
+          <i class="ti ti-search"></i> Утюг до 50 000 ₸
+        </button>
+        <button class="example-btn" data-msg="Есть рецепт на азитромицин, нужно сегодня">
+          <i class="ti ti-pill"></i> Лекарство по рецепту
+        </button>
+        <button class="example-btn" data-msg="Подпиши меня на молоко и яйца каждую среду">
+          <i class="ti ti-repeat"></i> Подписка
+        </button>
+        <button class="example-btn" data-msg="Нужны кроссовки Nike Air Max 270, размер 42, дешевле 50 тысяч">
+          <i class="ti ti-tag"></i> Отследить цену
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="btn-settings" id="settingsBtn">
+        <i class="ti ti-settings"></i> Настройки
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main chat area -->
+  <main class="chat-main">
+    <header class="chat-header">
+      <div class="chat-header-left">
+        <div class="avatar-sm"><i class="ti ti-robot"></i></div>
+        <div>
+          <div class="header-title">Halyk Shopping Agent</div>
+          <div class="header-subtitle" id="headerSubtitle">Чем могу помочь сегодня?</div>
+        </div>
+      </div>
+      <div class="chat-header-right">
+        <button class="icon-btn" id="clearBtn" title="Очистить чат"><i class="ti ti-trash"></i></button>
+        <button class="icon-btn" id="apiKeyHeaderBtn" title="API ключ"><i class="ti ti-key"></i></button>
+      </div>
+    </header>
+
+    <div class="messages-area" id="messagesArea">
+      <!-- Welcome message -->
+      <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-icon"><i class="ti ti-robot"></i></div>
+        <h2>Halyk Shopping Agent</h2>
+        <p>Ваш AI-ассистент для покупок в экосистеме Halyk.<br>Спросите на русском или казахском.</p>
+        <div class="welcome-chips">
+          <span class="chip"><i class="ti ti-building-store"></i> Market</span>
+          <span class="chip"><i class="ti ti-pill"></i> Appteka</span>
+          <span class="chip"><i class="ti ti-plane"></i> Travel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input area -->
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea
+          id="messageInput"
+          placeholder="Напишите запрос..."
+          rows="1"
+          maxlength="1000"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" disabled>
+          <i class="ti ti-send"></i>
+        </button>
+      </div>
+      <div class="input-hint">
+        <span id="charCount">0 / 1000</span>
+        <span>Enter — отправить, Shift+Enter — перенос строки</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Settings modal -->
+  <div class="modal-overlay" id="settingsModal" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="ti ti-key"></i> Anthropic API ключ</h3>
+        <button class="modal-close" id="settingsClose"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>Ключ хранится только в localStorage вашего браузера и не передаётся третьим лицам.</p>
+        <div class="form-group">
+          <label>API ключ</label>
+          <div class="input-with-toggle">
+            <input type="password" id="apiKeyField" placeholder="sk-ant-..." />
+            <button class="toggle-vis" id="toggleVis"><i class="ti ti-eye"></i></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Клиент (для демо)</label>
+          <input type="text" id="clientName" value="Нариман" />
+        </div>
+        <div class="form-group">
+          <label>Город</label>
+          <input type="text" id="clientCity" value="Алматы" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="settingsCancel">Отмена</button>
+        <button class="btn btn-primary" id="settingsSave">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
