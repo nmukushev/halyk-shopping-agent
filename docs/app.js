@@ -129,38 +129,69 @@ const TOOLS = [
   },
 ];
 
-// ── Mock tool executor ─────────────────────────────────────────────────────
-const CATALOG = {
-  молоко:     [{ sku: 'MK-001', name: 'Молоко Айналайын 2.5%, 1л',         price: 590,   rating: 4.8, reviews: 1240, merchant: 'Halyk Fresh' }],
-  хлеб:       [{ sku: 'BR-001', name: 'Хлеб тостовый Аксай, 550г',          price: 380,   rating: 4.5, reviews: 560,  merchant: 'Halyk Fresh' }],
-  утюг:       [
-    { sku: 'IR-001', name: 'Tefal Pro Express Protect',  price: 49990, rating: 4.7, reviews: 240, merchant: 'Techno Market' },
-    { sku: 'IR-002', name: 'Philips Azur DST5030',        price: 39990, rating: 4.5, reviews: 180, merchant: 'Techno Market' },
-    { sku: 'IR-003', name: 'Bosch Sensixx DS5 TDA50',     price: 45500, rating: 4.6, reviews: 310, merchant: 'Techno Market' },
-  ],
-  кроссовки:  [{ sku: 'SN-001', name: 'Nike Air Max 270, р.42',              price: 64990, rating: 4.9, reviews: 88,   merchant: 'Sport KZ' }],
-  яйца:       [{ sku: 'EG-001', name: 'Яйца куриные C0, 10шт',               price: 650,   rating: 4.7, reviews: 920,  merchant: 'Halyk Fresh' }],
-  фен:        [{ sku: 'HD-001', name: 'Dyson Supersonic HD07',                price: 199900,rating: 4.9, reviews: 142,  merchant: 'Techno Market' }],
-};
+// ── Real catalog from halykmarket.kz ──────────────────────────────────────
+// Prices fetched June 2026. url — прямая ссылка на товар.
+const CATALOG = [
+  // ── Смартфоны ────────────────────────────────────────────────────────────
+  { sku: 'SM-001', name: 'Samsung Galaxy S24 Ultra 5G 12/256Gb Titanium Gray', price: 388489, oldPrice: 450000, rating: 4.9, reviews: 312, merchant: 'Samsung KZ', category: 'смартфоны', tags: ['смартфон','samsung','s24','телефон','galaxy'], url: 'https://halykmarket.kz/category/smartfony/smartfon-samsung-galaxy-s24-ultra-5g?sku=12256gb_titanium-gray' },
+  { sku: 'SM-002', name: 'Samsung Galaxy S24 Plus 5G 12/256Gb Onyx Black',    price: 358612, oldPrice: 420000, rating: 4.8, reviews: 198, merchant: 'Samsung KZ', category: 'смартфоны', tags: ['смартфон','samsung','s24','телефон','galaxy'], url: 'https://halykmarket.kz/category/smartfony/smartfon-samsung-galaxy-s24-5g?sku=12256gb_onyx-black' },
+  { sku: 'SM-003', name: 'Samsung Galaxy S24 FE 5G 8/256Gb Gray',             price: 289990, oldPrice: 330000, rating: 4.7, reviews: 145, merchant: 'Samsung KZ', category: 'смартфоны', tags: ['смартфон','samsung','s24','телефон','galaxy'], url: 'https://halykmarket.kz/category/smartfony/smartfon-samsung-galaxy-s24-fe-5g?sku=8256gb_gray' },
+  { sku: 'SM-004', name: 'Apple iPhone 15 128Gb Black',                        price: 369990, oldPrice: 420000, rating: 4.9, reviews: 534, merchant: 'iSpace KZ',  category: 'смартфоны', tags: ['смартфон','iphone','apple','айфон','телефон','iphone15'], url: 'https://halykmarket.kz/category/smartfony/smartfon-apple-iphone-15?sku=128gb_black' },
+  { sku: 'SM-005', name: 'Apple iPhone 15 Pro 256Gb Natural Titanium',         price: 489990, oldPrice: 550000, rating: 4.9, reviews: 287, merchant: 'iSpace KZ',  category: 'смартфоны', tags: ['смартфон','iphone','apple','айфон','телефон','iphone15','pro'], url: 'https://halykmarket.kz/category/smartfony/smartfon-apple-iphone-15-pro?sku=256gb_natural-titanium' },
+  { sku: 'SM-006', name: 'Apple iPhone 16 Pro Max 256Gb Black Titanium',       price: 649990, oldPrice: 720000, rating: 5.0, reviews: 89,  merchant: 'iSpace KZ',  category: 'смартфоны', tags: ['смартфон','iphone','apple','айфон','телефон','iphone16','pro','max'], url: 'https://halykmarket.kz/category/smartfony/smartfon-apple-iphone-16-pro-max?sku=8256gb_blacktitanium' },
+
+  // ── Телевизоры ───────────────────────────────────────────────────────────
+  { sku: 'TV-001', name: 'LG OLED55A3RLA 55" 4K OLED Smart TV',               price: 440990, oldPrice: 540000, rating: 4.8, reviews: 203, merchant: 'LG Electronics', category: 'телевизоры', tags: ['телевизор','lg','oled','55','смарт','4k','тв'], url: 'https://halykmarket.kz/category/televizori/televizor-lg-oled55a3rla-55-chernyj' },
+  { sku: 'TV-002', name: 'Samsung UE55CU7100UXUZ 55" 4K UHD Smart TV',        price: 249990, oldPrice: 299990, rating: 4.6, reviews: 178, merchant: 'Samsung KZ',   category: 'телевизоры', tags: ['телевизор','samsung','55','смарт','4k','тв'], url: 'https://halykmarket.kz/category/televizori/televizor-samsung-ue55cu7100uxuz-55' },
+  { sku: 'TV-003', name: 'Samsung QE55QN700BUXCE 55" Neo QLED 8K',            price: 699990, oldPrice: 850000, rating: 4.9, reviews: 67,  merchant: 'Samsung KZ',   category: 'телевизоры', tags: ['телевизор','samsung','qled','55','8k','тв'], url: 'https://halykmarket.kz/category/televizori/televizor-samsung-qe55qn700buxce-55' },
+
+  // ── Холодильники ─────────────────────────────────────────────────────────
+  { sku: 'RF-001', name: 'Samsung RB31FERNDWW/WT Белый',                       price: 188999, oldPrice: 209999, rating: 4.7, reviews: 321, merchant: 'Samsung KZ',  category: 'холодильники', tags: ['холодильник','samsung','двухкамерный'], url: 'https://halykmarket.kz/category/holodilniki' },
+  { sku: 'RF-002', name: 'LG GC-B459MEWM Бежевый',                            price: 197100, oldPrice: 219000, rating: 4.8, reviews: 256, merchant: 'LG Electronics', category: 'холодильники', tags: ['холодильник','lg','двухкамерный'], url: 'https://halykmarket.kz/category/holodilniki' },
+  { sku: 'RF-003', name: 'LG GC-B399SQCL Белый',                              price: 125987, oldPrice: 139986, rating: 4.6, reviews: 189, merchant: 'LG Electronics', category: 'холодильники', tags: ['холодильник','lg','двухкамерный'], url: 'https://halykmarket.kz/category/holodilniki' },
+  { sku: 'RF-004', name: 'Samsung RS80F65J1FWT Side-by-Side Чёрный',           price: 769990, oldPrice: 944990, rating: 4.9, reviews: 78,  merchant: 'Samsung KZ',  category: 'холодильники', tags: ['холодильник','samsung','side-by-side','большой'], url: 'https://halykmarket.kz/category/holodilniki' },
+
+  // ── Стиральные машины ────────────────────────────────────────────────────
+  { sku: 'WM-001', name: 'Samsung WW90DG6G94LBLD 9кг 1400об',                 price: 349990, oldPrice: 384990, rating: 4.8, reviews: 145, merchant: 'Samsung KZ',  category: 'стиральные машины', tags: ['стиральная','машина','стиралка','samsung','автомат'], url: 'https://halykmarket.kz/category/stiralnie-mashini/stiralnaya-mashina-samsung-ww70ag5s21eeld-belyy' },
+  { sku: 'WM-002', name: 'Haier HW80-B14979 8кг Белая',                       price: 189990, oldPrice: 220000, rating: 4.6, reviews: 98,  merchant: 'Haier KZ',    category: 'стиральные машины', tags: ['стиральная','машина','стиралка','haier','автомат'], url: 'https://halykmarket.kz/category/stiralnie-mashini/stiralnaja-mashina-haier-hw80-b14979-belyj' },
+  { sku: 'WM-003', name: 'LG F4V3ES6W 9кг Белая Steam',                       price: 279990, oldPrice: 320000, rating: 4.9, reviews: 167, merchant: 'LG Electronics', category: 'стиральные машины', tags: ['стиральная','машина','стиралка','lg','автомат'], url: 'https://halykmarket.kz/category/stiralnie-mashini/stiralnaja-mashina-lg-f4v3es6w' },
+
+  // ── Ноутбуки ─────────────────────────────────────────────────────────────
+  { sku: 'NB-001', name: 'Lenovo IdeaPad Slim 3 15IRU8 512Gb Серый',          price: 269990, oldPrice: 310000, rating: 4.7, reviews: 234, merchant: 'Lenovo KZ',   category: 'ноутбуки', tags: ['ноутбук','lenovo','ideapad','laptop'], url: 'https://halykmarket.kz/category/noutbuki/noutbuk-lenovo-ideapad-slim-3-15iru8-82x7009crk-512gb-seryj' },
+  { sku: 'NB-002', name: 'Lenovo LOQ 15IRH8 Gaming 512Gb Серый',              price: 459990, oldPrice: 510000, rating: 4.8, reviews: 156, merchant: 'Lenovo KZ',   category: 'ноутбуки', tags: ['ноутбук','lenovo','loq','gaming','игровой','laptop'], url: 'https://halykmarket.kz/category/noutbuki/-lenovo-loq-15irh8-82xv00qvrk-' },
+  { sku: 'NB-003', name: 'Lenovo ThinkPad X1 Carbon Gen 11 14" 1Tb Black',   price: 899990, oldPrice: 990000, rating: 4.9, reviews: 45,  merchant: 'Lenovo KZ',   category: 'ноутбуки', tags: ['ноутбук','lenovo','thinkpad','x1','бизнес','laptop'], url: 'https://halykmarket.kz/category/noutbuki/noutbuk-lenovo-thinkpad-x1-21hm005prt-14-1tb-black' },
+
+  // ── Пылесосы ─────────────────────────────────────────────────────────────
+  { sku: 'VC-001', name: 'Xiaomi Robot Vacuum X20+ Белый',                     price: 218688, oldPrice: 259990, rating: 4.8, reviews: 189, merchant: 'Xiaomi KZ',   category: 'пылесосы', tags: ['пылесос','робот','xiaomi','робот-пылесос'], url: 'https://halykmarket.kz/category/pilesosi/robot-pylesos-xiaomi-x20-belyj' },
+  { sku: 'VC-002', name: 'Xiaomi Robot Vacuum S20+ Чёрный',                   price: 189990, oldPrice: 220000, rating: 4.7, reviews: 134, merchant: 'Xiaomi KZ',   category: 'пылесосы', tags: ['пылесос','робот','xiaomi','робот-пылесос'], url: 'https://halykmarket.kz/category/pilesosi/robot-pylesos-xiaomi-robot-vacuum-s20-chernyy' },
+
+  // ── Кроссовки ────────────────────────────────────────────────────────────
+  { sku: 'SN-001', name: 'Nike Air Max 97 Futura р.42 Белые',                  price: 74900,  oldPrice: 93520,  rating: 4.8, reviews: 78,  merchant: 'Sport House', category: 'кроссовки', tags: ['кроссовки','nike','air max','обувь'], url: 'https://halykmarket.kz/category/muzhskie-krossovki-i-kedy' },
+  { sku: 'SN-002', name: 'Adidas Ultrabounce ID2253 р.42 Чёрные',             price: 39990,  oldPrice: 52000,  rating: 4.6, reviews: 112, merchant: 'Sport House', category: 'кроссовки', tags: ['кроссовки','adidas','обувь'], url: 'https://halykmarket.kz/category/muzhskie-krossovki-i-kedy/krossovki-adidas-ultrabounce-id2253?sku=8_chernyy' },
+  { sku: 'SN-003', name: 'Adidas Ozweego GY6180 р.43 Чёрные',                price: 52990,  oldPrice: 68000,  rating: 4.7, reviews: 89,  merchant: 'Sport House', category: 'кроссовки', tags: ['кроссовки','adidas','ozweego','обувь'], url: 'https://halykmarket.kz/category/muzhskie-krossovki-i-kedy/krossovki-adidas-ozweego-gy6180?sku=43_chernye' },
+];
 
 const DRUGS = [
   { sku: 'AP-001', name: 'Азитромицин капс. 500мг №6', price: 2890, rx: true,  pharmacy: 'Europharma (1.2 км)', pickup: 'сегодня' },
   { sku: 'AP-002', name: 'Парацетамол таб. 500мг №10',  price: 350,  rx: false, pharmacy: 'Europharma (1.2 км)', pickup: 'сегодня' },
   { sku: 'AP-003', name: 'Ибупрофен таб. 400мг №20',    price: 680,  rx: false, pharmacy: 'Maxi Pharm (2.1 км)', pickup: 'сегодня' },
+  { sku: 'AP-004', name: 'Амоксициллин капс. 500мг №16',price: 1450, rx: true,  pharmacy: 'Amangeldy Pharm (0.8 км)', pickup: 'сегодня' },
+  { sku: 'AP-005', name: 'Ксарелто таб. 10мг №10',      price: 8900, rx: true,  pharmacy: 'Europharma (1.2 км)', pickup: 'завтра' },
 ];
 
 function executeTool(name, input) {
   if (name === 'market_search') {
     const q = String(input.query || '').toLowerCase();
     const max = input.maxPrice;
-    let results = [];
-    for (const [key, items] of Object.entries(CATALOG)) {
-      if (q.includes(key) || key.includes(q.split(' ')[0])) {
-        results.push(...items);
-      }
-    }
-    if (!results.length) results = Object.values(CATALOG).flat();
+    const words = q.split(/\s+/).filter(w => w.length > 2);
+    let results = CATALOG.filter(item =>
+      item.tags.some(tag => words.some(w => tag.includes(w) || w.includes(tag))) ||
+      item.name.toLowerCase().split(/\s+/).some(w => words.some(qw => w.includes(qw))) ||
+      item.category && words.some(w => item.category.includes(w))
+    );
+    if (!results.length) results = CATALOG.slice(0, 6);
     if (max) results = results.filter(i => i.price <= max);
+    results.sort((a, b) => (b.rating * Math.log(b.reviews + 1)) - (a.rating * Math.log(a.reviews + 1)));
     return { results: results.slice(0, input.limit || 3) };
   }
   if (name === 'market_add_to_cart') {
@@ -333,10 +364,13 @@ function addAgentBubble(text, toolsExecuted, intent) {
       <div class="product-card" data-sku="${item.sku}" data-name="${escHtml(item.name)}" data-price="${item.price}">
         <div class="product-rank">${idx + 1}</div>
         <div class="product-info">
-          <div class="product-name">${escHtml(item.name)}</div>
+          <div class="product-name">${item.url ? `<a href="${item.url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">${escHtml(item.name)}</a>` : escHtml(item.name)}</div>
           <div class="product-meta">⭐ ${item.rating} · ${item.reviews} отзывов · ${item.merchant}</div>
         </div>
-        <div class="product-price">${item.price.toLocaleString('ru-RU')} ₸</div>
+        <div class="product-price-block">
+          ${item.oldPrice ? `<div class="product-old-price">${item.oldPrice.toLocaleString('ru-RU')} ₸</div>` : ''}
+          <div class="product-price">${item.price.toLocaleString('ru-RU')} ₸</div>
+        </div>
         <button class="product-add">+ Корзина</button>
       </div>
     `).join('');
